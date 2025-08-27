@@ -1,0 +1,214 @@
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router";
+import { Layers, Blocks, HomeIcon, Folder, Lock, Image, Hexagon, FileQuestionMarkIcon } from 'lucide-react';
+
+import LPC from "./pages/LPC";
+import Pixels from "./pages/Pixels";
+
+import SmokeBackground from "./effects/SmokeBackground";
+import BuzzText from "./effects/BuzzText";
+
+// Lista de navegación
+const navItems = [
+  {
+    title: 'Inicio',
+    id: 'inicio',
+    icon: <HomeIcon size={24} />,
+    blocked: true,
+  },
+  {
+    title: 'Proyectos',
+    id: 'proyectos',
+    icon: <Folder size={24} />,
+    blocked: false,
+  },
+  {
+    title: 'osámktky',
+    id: 'images',
+    icon: <Image size={24} />,
+    blocked: true,
+  },
+  {
+    title: 'otlkxtay',
+    id: 'infernus',
+    icon: <Hexagon size={24} />,
+    blocked: true,
+  },
+];
+
+// Lista de aplicaciones
+const appRoutes = [
+  {
+    title: 'LPC',
+    route: '/lpc',
+    icon: <Layers />,
+    status: 'v1.0',
+    description: 'Crea Listening Parties personalizadas.',
+    blocked: false,
+  },
+  {
+    title: 'Pixels',
+    route: '/pixels',
+    icon: <Blocks />,
+    status: 'v1.0',
+    description: 'Dibuja en una cuadrícula de píxeles.',
+    blocked: false,
+  },
+  {
+    title: '???',
+    route: '/',
+    icon: <Hexagon />,
+    status: 'Pendiente',
+    description: '-',
+    blocked: true,
+  },
+];
+
+// Componente principal de la página de inicio
+function Home() {
+  const [activeTab, setActiveTab] = useState('proyectos');
+
+  const handleNavClick = (item) => {
+    if (!item.blocked) {
+      setActiveTab(item.id);
+    }
+  };
+
+  return (
+    <>
+      {/* Fondo de humo y texto */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <SmokeBackground
+          fadeInOut={true}
+          minOpacity={0.2}
+          maxOpacity={0.5}
+          numParticles={35}
+          direction="left"
+          origin="right"
+          movementIntensity={10}
+        />
+
+        {/* Efecto de grano */}
+        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 bg-[url(/grunge.jpg)] bg-cover mix-blend-color-dodge opacity-20" alt="background texture" />
+      </div>
+
+      <div className="w-full h-full text-almond relative crt-effect">
+        
+        {/* Logo */}
+        <div className="flex items-center justify-center p-10 md:p-20">
+          <BuzzText intensity={1} showGlow={true}>
+            <span className="text-2xl font-bold text-almond">
+              <img src="/Flower.ico" className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
+            </span>
+          </BuzzText>
+        </div>
+
+        {/* Barra de navegación con espacio a los lados */}
+        <div className="flex justify-center px-4 md:px-10 lg:px-40 xl:px-60 2xl:px-80 mb-8">
+          <div className="navbar p-2 w-full max-w-6xl relative">
+            <div className="flex justify-around w-full">
+              {navItems.map((item) => (
+                <button 
+                  key={item.id}
+                  className={`flex flex-col items-center px-4 py-2 rounded-md transition-all duration-300 relative ${
+                    activeTab === item.id 
+                      ? 'bg-almond/90 text-chestnut' 
+                      : item.blocked
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-almond/25'
+                  }`}
+                  onClick={() => handleNavClick(item)}
+                  disabled={item.blocked}
+                >
+                  {item.icon}
+                  <span className="text-sm font-semibold mt-1">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Contenido dinámico */}
+        <div className="flex flex-col items-center px-4 md:px-10 lg:px-20 xl:px-40 2xl:px-60 pb-10">
+          <div className="w-full max-w-6xl">
+            {activeTab === 'proyectos' && (
+              <div className="grid grid-cols-1 gap-6">
+                {appRoutes.map(app => (
+                  <div
+                    key={app.route}
+                    className={`bg-almond/10 backdrop-blur-sm rounded-md p-8 transition-all duration-500 ${
+                      app.blocked 
+                        ? 'opacity-70 cursor-not-allowed' 
+                        : 'hover:scale-[1.005] hover:shadow-xl hover:backdrop-blur-xl hover:bg-almond/15 hover:cursor-pointer'
+                    }`}
+                    onClick={() => !app.blocked && (window.location.href = app.route)}
+                  >
+                    <div className="flex flex-col items-center text-center mb-4">
+                      <div className="p-3 rounded-lg bg-almond/20 mb-4">
+                        {app.icon}
+                      </div>
+                      <h2 className="text-xl font-bold mb-2">{app.title}</h2>
+                      <p className="opacity-90 mb-3">{app.description}</p>
+                      {app.status && (
+                        <div className="badge badge-sm badge-outline rounded px-2 py-1">
+                          {app.status}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Contenido para la pestaña de Inicio */}
+            {activeTab === 'inicio' && (
+              <div className="bg-almond/10 backdrop-blur-sm rounded-md p-8 text-center">
+                <div className="flex flex-col items-center">
+                  <HomeIcon size={48} className="mb-4 text-almond" />
+                  <h2 className="text-2xl font-bold mb-4">Bienvenido a la Colección de Aplicaciones</h2>
+                  <p className="text-lg mb-6">Selecciona "Proyectos" para explorar las aplicaciones disponibles.</p>
+                  <button 
+                    className="px-6 py-3 bg-almond/20 hover:bg-almond/30 rounded-lg transition-colors"
+                    onClick={() => setActiveTab('proyectos')}
+                  >
+                    Ver Proyectos
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Contenido para otras pestañas bloqueadas */}
+            {(activeTab === 'images' || activeTab === 'infernus' || activeTab === 'about') && (
+              <div className="bg-almond/10 backdrop-blur-sm rounded-md p-8 text-center">
+                <div className="flex flex-col items-center">
+                  <Lock size={48} className="mb-4 text-chestnut/70" />
+                  <h2 className="text-2xl font-bold mb-4">Contenido Bloqueado</h2>
+                  <button 
+                    className="px-6 py-3 bg-almond/20 hover:bg-almond/30 rounded-lg transition-colors"
+                    onClick={() => setActiveTab('proyectos')}
+                  >
+                    Volver a Proyectos
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/lpc" element={<LPC />} />
+        <Route path="/pixels" element={<Pixels/>} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
