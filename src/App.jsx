@@ -89,7 +89,7 @@ function Home() {
         />
 
         {/* Efecto de grano */}
-        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 bg-[url(/grunge.jpg)] bg-cover mix-blend-color-dodge opacity-20" alt="background texture" />
+        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 mix-blend-color-dodge opacity-20" alt="background texture" src={`${process.env.PUBLIC_URL}/grunge.jpg`} />
       </div>
 
       <div className="w-full h-full text-almond relative crt-effect">
@@ -98,7 +98,7 @@ function Home() {
         <div className="flex items-center justify-center p-10 md:p-20">
           <BuzzText intensity={1} showGlow={true}>
             <span className="text-2xl font-bold text-almond">
-              <img src="/Flower.ico" className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
+              <img src={`${process.env.PUBLIC_URL}/Flower.ico`} className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
             </span>
           </BuzzText>
         </div>
@@ -201,7 +201,7 @@ function Home() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/PLRGNM">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lpc" element={<LPC />} />
