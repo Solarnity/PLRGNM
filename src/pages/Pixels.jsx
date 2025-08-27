@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router';
 import { ChevronLeft, Brush, Eraser, FileDown, FileUp, Trash, MoveDownRight, MoveDownLeft, MoveUpRight, MoveUpLeft } from 'lucide-react';
 
 const PixelArtCreator = () => {
@@ -8,6 +9,10 @@ const PixelArtCreator = () => {
     '#4CEAEF', '#3C50F0', '#6B50F6', '#EC1F80',
     '#000000', '#444444', '#787878', '#FFFFFF',
   ];
+
+    useEffect(() => {
+    document.title = 'Pixels';
+  }, []);
   
   // Estados
   const [gridSize, setGridSize] = useState(16);
@@ -352,12 +357,12 @@ const PixelArtCreator = () => {
           {/* Panel de controles */}
           <div className="col-span-1 bg-neutral-800 p-4 md:p-6 rounded-lg shadow-lg">
             <div className="flex items-center justify-between w-[85%] mb-3">
-              <button
-                onClick={() => (window.location.href = '/')}
+              <Link
+                to="/"
                 className="btn btn-sm btn-ghost btn-square flex items-center justify-center shadow-none hover:border-transparent hover:bg-white/25 hover:text-gray-900 disabled:text-white/50"
               >
                 <ChevronLeft/>
-              </button>
+              </Link>
             </div>
             
             {/* Selector de tamaño */}

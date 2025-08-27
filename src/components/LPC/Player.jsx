@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, AudioLines, Mic, ListMusic, ChevronLeft } from 'lucide-react';
 
 const Player = ({
@@ -32,12 +33,12 @@ const Player = ({
       className="w-full h-full flex flex-col items-center justify-center text-white"
     >
       <div className="flex items-center justify-between w-[85%] translate-y-[-170px]">
-        <button
-          onClick={() => (window.location.href = '/')}
+        <Link
+          to="/"
           className="btn btn-ghost btn-square flex items-center justify-center shadow-none hover:border-transparent hover:bg-white/25 hover:text-gray-900 disabled:text-white/50"
         >
           <ChevronLeft/>
-        </button>
+        </Link>
       </div>
 
       <div className="text-center">

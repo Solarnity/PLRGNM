@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { Link, BrowserRouter, Routes, Route } from "react-router";
 import { Layers, Blocks, HomeIcon, Folder, Lock, Image, Hexagon, FileQuestionMarkIcon } from 'lucide-react';
 
 import LPC from "./pages/LPC";
@@ -89,7 +89,7 @@ function Home() {
         />
 
         {/* Efecto de grano */}
-        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 mix-blend-color-dodge opacity-20" alt="background texture" src={`${process.env.PUBLIC_URL}/grunge.jpg`} />
+        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 mix-blend-color-dodge opacity-20" alt="background texture" src="/grunge.jpg" />
       </div>
 
       <div className="w-full h-full text-almond relative crt-effect">
@@ -98,7 +98,7 @@ function Home() {
         <div className="flex items-center justify-center p-10 md:p-20">
           <BuzzText intensity={1} showGlow={true}>
             <span className="text-2xl font-bold text-almond">
-              <img src={`${process.env.PUBLIC_URL}/Flower.ico`} className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
+              <img src="/Flower.ico" className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
             </span>
           </BuzzText>
         </div>
@@ -134,14 +134,14 @@ function Home() {
             {activeTab === 'proyectos' && (
               <div className="grid grid-cols-1 gap-6">
                 {appRoutes.map(app => (
-                  <div
+                  <Link
                     key={app.route}
+                    to={app.route}
                     className={`bg-almond/10 backdrop-blur-sm rounded-md p-8 transition-all duration-500 ${
                       app.blocked 
                         ? 'opacity-70 cursor-not-allowed' 
                         : 'hover:scale-[1.005] hover:shadow-xl hover:backdrop-blur-xl hover:bg-almond/15 hover:cursor-pointer'
                     }`}
-                    onClick={() => !app.blocked && (window.location.href = app.route)}
                   >
                     <div className="flex flex-col items-center text-center mb-4">
                       <div className="p-3 rounded-lg bg-almond/20 mb-4">
@@ -155,7 +155,7 @@ function Home() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -201,7 +201,7 @@ function Home() {
 
 function App() {
   return (
-    <BrowserRouter basename="/PLRGNM">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lpc" element={<LPC />} />
