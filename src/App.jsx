@@ -43,7 +43,7 @@ const appRoutes = [
     route: '/lpc',
     icon: <Layers />,
     status: 'v1.0',
-    description: 'Crea Listening Parties personalizadas.',
+    description: 'Creador de Listening Parties',
     blocked: false,
   },
   {
@@ -51,7 +51,7 @@ const appRoutes = [
     route: '/pixels',
     icon: <Blocks />,
     status: 'v1.0',
-    description: 'Dibuja en una cuadrícula de píxeles.',
+    description: 'Pinta en una cuadrícula de píxeles',
     blocked: false,
   },
   {
@@ -77,30 +77,43 @@ function Home() {
   return (
     <>
       {/* Fondo de humo y texto */}
-      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
-        <SmokeBackground
-          fadeInOut={true}
-          minOpacity={0.2}
-          maxOpacity={0.5}
-          numParticles={35}
-          direction="left"
-          origin="right"
-          movementIntensity={10}
-        />
+      <div className="fixed inset-0 w-lvw h-lvh z-0 pointer-events-none">
+        <div className="fixed md:hidden">
+          <SmokeBackground
+            fadeInOut={true}
+            minOpacity={0.2}
+            maxOpacity={0.5}
+            numParticles={8}
+            direction="left"
+            origin="right"
+            movementIntensity={7}
+          />
+        </div>
+        
+        <div className="hidden md:block">
+          <SmokeBackground
+            fadeInOut={true}
+            minOpacity={0.2}
+            maxOpacity={0.5}
+            numParticles={35}
+            direction="left"
+            origin="right"
+            movementIntensity={10}
+          />
+        </div>
+        
 
         {/* Efecto de grano */}
-        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-screen w-screen pointer-events-none z-10 mix-blend-color-dodge opacity-20" alt="background texture" src="/grunge.jpg" />
+        <img className="fixed overflow-hidden top-0 bottom-0 left-0 right-0 h-lvh w-lvw pointer-events-none z-10 mix-blend-color-dodge opacity-20" alt="background texture" src="/grunge.jpg" />
       </div>
 
       <div className="w-full h-full text-almond relative crt-effect">
         
         {/* Logo */}
         <div className="flex items-center justify-center p-10 md:p-20">
-          <BuzzText intensity={1} showGlow={true}>
             <span className="text-2xl font-bold text-almond">
-              <img src="/Flower.ico" className="inline h-50 w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
+              <img src="/Flower.ico" className="inline h-35 w-35 md:h-50 md:w-50 mr-2 -mt-1 animate-spin [animation-duration:20s]" alt="logo" />
             </span>
-          </BuzzText>
         </div>
 
         {/* Barra de navegación con espacio a los lados */}
@@ -110,7 +123,7 @@ function Home() {
               {navItems.map((item) => (
                 <button 
                   key={item.id}
-                  className={`flex flex-col items-center px-4 py-2 rounded-md transition-all duration-300 relative ${
+                  className={`flex flex-col items-center px-2 py-1 md:px-4 md:py-2 rounded-md transition-all duration-300 relative ${
                     activeTab === item.id 
                       ? 'bg-almond/90 text-chestnut' 
                       : item.blocked
@@ -121,7 +134,7 @@ function Home() {
                   disabled={item.blocked}
                 >
                   {item.icon}
-                  <span className="text-sm font-semibold mt-1">{item.title}</span>
+                  <span className="text-xs md:text-sm font-semibold mt-1">{item.title}</span>
                 </button>
               ))}
             </div>

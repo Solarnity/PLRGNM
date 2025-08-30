@@ -326,10 +326,10 @@ function LPC() {
           backdrop-contrast-95
         `}
       />
-      <div className='flex min-h-screen text-white gap-0 relative'>
+      <div className='flex flex-col lg:flex-row min-h-screen text-white gap-0 relative'>
         <audio ref={audioRef} />
-        {/* Player 50% */}
-        <div className='w-1/2 flex flex-col h-screen justify-center items-center px-8 py-8'>
+        {/* Player 50% en desktop, 100% en móvil */}
+        <div className='w-full lg:w-1/2 flex flex-col h-auto lg:h-screen justify-center items-center px-4 lg:px-8 py-4 lg:py-8 order-2 lg:order-1'>
           <Player
             isPlaying={isPlaying}
             playlist={playlist}
@@ -347,9 +347,9 @@ function LPC() {
             setTab={setTab} // Pasar el setter de tab como prop
           />
         </div>
-        {/* Playlist/Lyrics 50% */}
-        <div className={`w-1/2 flex flex-col h-screen items-center px-8 py-8 text-gray-300
-          ${tab === 'playlist' ? 'justify-start' : 'justify-center'}`}>
+        {/* Playlist/Lyrics 50% en desktop, 100% en móvil */}
+        <div className={`w-full lg:w-1/2 flex flex-col h-auto lg:h-screen items-center px-4 lg:px-8 py-4 lg:py-8 text-gray-300
+          ${tab === 'playlist' ? 'justify-start' : 'justify-center'} order-1 lg:order-2`}>
           <div className="w-full max-w-3xl mx-auto">
             <div className="w-full">
               {tab==='playlist' ? (

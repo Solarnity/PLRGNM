@@ -280,16 +280,26 @@ const SmokeBackground = ({
     }
 
     const handleResize = () => {
+      const oldWidth = canvas.width;
+      const oldHeight = canvas.height;
+
+      // Actualizar tamaño del canvas
       resizeCanvas();
-      // Recalcular posiciones basadas en el nuevo tamaño
+
+      const widthRatio = canvas.width / oldWidth;
+      const heightRatio = canvas.height / oldHeight;
+
+      // Escalar posiciones de las partículas en lugar de reiniciarlas
       for (let i = 0; i < particlesRef.current.length; i++) {
-        const { x, y } = getInitialPosition(canvas.width, canvas.height);
-        particlesRef.current[i].x = x;
-        particlesRef.current[i].y = y;
+        const p = particlesRef.current[i];
+        p.x *= widthRatio;
+        p.y *= heightRatio;
       }
+
+      // Redibujar sin resetear
       handleParticles(0);
     };
-    
+
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -322,7 +332,7 @@ const SmokeBackground = ({
   return (
     <div 
       id="smoke-bkg" 
-      className={`fixed top-0 -z-10 h-full w-full ${classes}`}
+      className={`fixed top-0 -z-10 h-lvh w-lvw ${classes}`}
     >
       <canvas
         id="smoke-canvas"

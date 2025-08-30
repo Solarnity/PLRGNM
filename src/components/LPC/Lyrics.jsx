@@ -49,24 +49,24 @@ export default function Lyrics({ lyrics, progress, onSeek }) {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 flex flex-col h-full">
-      <div className="tabs mb-4">
+      <div className="tabs mb-4 flex justify-center lg:justify-start">
         <button
           className={`tab tab-bordered text-white [--color-base-content:text-white] ${activeTab === "plain" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("plain")}
         >
-          <LetterText />
+          <LetterText size={18} lg:size={24} />
         </button>
         <button
           className={`tab tab-bordered text-white [--color-base-content:text-white] ${activeTab === "synced" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("synced")}
         >
-          <MicVocal />
+          <MicVocal size={18} lg:size={24} />
         </button>
       </div>
 
       <div className="tab-content flex-1 flex flex-col justify-center h-full">
         {activeTab === "synced" ? (
-          <div ref={containerRef} className="relative h-[75vh] overflow-hidden p-4">
+          <div ref={containerRef} className="relative h-[50vh] lg:h-[75vh] overflow-hidden p-4">
             {synced.length > 0 ? (
               <AnimatePresence>
                 {[0, 1, 2, 3, 4]
@@ -81,7 +81,7 @@ export default function Lyrics({ lyrics, progress, onSeek }) {
                       <motion.div
                         ref={isMain ? currentLineRef : null}
                         key={line.time}
-                        className="absolute left-0 right-0 text-left text-2xl font-bold"
+                        className="absolute left-0 right-0 text-left text-lg lg:text-2xl font-bold"
                         style={{ top: "35%" }}
                         initial={{ y: STEP * (offset + 1), opacity: 0 }}
                         animate={{ y: STEP * offset, opacity: opacityFor(offset) }}
@@ -118,7 +118,7 @@ export default function Lyrics({ lyrics, progress, onSeek }) {
             )}
           </div>
         ) : (
-          <div className="h-[75vh] overflow-y-auto whitespace-pre-wrap text-white text-left p-4 rounded-lg">
+          <div className="h-[50vh] lg:h-[75vh] overflow-y-auto whitespace-pre-wrap text-white text-left p-4 rounded-lg text-sm lg:text-base">
             {lyrics?.plain === "No se encontró letra para esta canción." ? (
               <h2 className="italic text-center opacity-75">No se encontró letra para esta canción.</h2>
             ) : (

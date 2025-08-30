@@ -15,7 +15,7 @@ const SortableSong = ({ song, index, currentSongIndex, setCurrentSongIndex, setI
     <div
       ref={setNodeRef}
       style={style}
-      className={`card p-4 flex flex-row items-center gap-4 cursor-pointer transition-all ${
+      className={`card p-3 lg:p-4 flex flex-row items-center gap-3 lg:gap-4 cursor-pointer transition-all ${
         index === currentSongIndex ? 'bg-base-100/20 ' : 'hover:bg-base-100/10'
       }`}
       onClick={() => {
@@ -23,27 +23,27 @@ const SortableSong = ({ song, index, currentSongIndex, setCurrentSongIndex, setI
         setIsPlaying(false);
       }}
     >
-      <div className="w-12 h-12 flex-shrink-0 rounded-md overflow-hidden flex items-center justify-center">
+      <div className="w-10 h-10 lg:w-12 lg:h-12 flex-shrink-0 rounded-md overflow-hidden flex items-center justify-center">
         {song.coverArt ? (
           <img src={song.coverArt} alt="Cover Art" className="object-cover w-full h-full" />
         ) : (
-          <AudioLines size={24} className="text-green" />
+          <AudioLines size={18} lg:size={24} className="text-green" />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className='font-semibold truncate'>{song.title}</div>
-        <div className='text-sm opacity-70 truncate'>{song.artist} • {song.album}</div>
+        <div className='font-semibold truncate text-sm lg:text-base'>{song.title}</div>
+        <div className='text-xs lg:text-sm opacity-70 truncate'>{song.artist} • {song.album}</div>
       </div>
       <div className="flex-shrink-0 flex items-center gap-1">
         <button
-          className="btn btn-ghost btn-sm btn-square"
+          className="btn btn-ghost btn-sm btn-square hidden lg:flex"
           onClick={(e) => { e.stopPropagation(); moveSong(index, index - 1); }}
           disabled={index === 0}
         >
           <ChevronUp size={16} />
         </button>
         <button
-          className="btn btn-ghost btn-sm btn-square"
+          className="btn btn-ghost btn-sm btn-square hidden lg:flex"
           onClick={(e) => { e.stopPropagation(); moveSong(index, index + 1); }}
           disabled={index === playlistLength - 1}
         >
@@ -83,14 +83,14 @@ const Playlist = ({ playlist, currentSongIndex, setCurrentSongIndex, setIsPlayin
 
   return (
     <div
-      className={`card w-full bg-transparent shadow-none p-4 text-white transition-all ${isDragActive ? 'border-2 border-dashed border-white/50' : 'border-2 border-transparent'}`}
+      className={`card w-full bg-transparent shadow-none p-3 lg:p-4 text-white transition-all ${isDragActive ? 'border-2 border-dashed border-white/50' : 'border-2 border-transparent'}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       <div className='card-body p-0'>
-        <div className='flex items-center justify-between mb-4'>
-          <h2 className='card-title text-xl'>Lista de Reproducción 
+        <div className='flex items-center justify-between mb-3 lg:mb-4'>
+          <h2 className='card-title text-lg lg:text-xl'>Lista de Reproducción 
             {playlist.length > 0 ? (` - ${playlist.length}`) : ( "" )}
           </h2>
           <div className='flex gap-2'>
@@ -99,11 +99,11 @@ const Playlist = ({ playlist, currentSongIndex, setCurrentSongIndex, setIsPlayin
                 className="btn btn-ghost btn-square flex items-center justify-center shadow-none hover:border-transparent hover:bg-white/25 hover:text-gray-900"
                 onClick={removeAllSongs}
               >
-                <Trash2 size={20} />
+                <Trash2 size={18} lg:size={20} />
               </button>
             )}
             <label htmlFor="file-upload" className="btn btn-ghost btn-square flex items-center justify-center shadow-none hover:border-transparent hover:bg-white/25 hover:text-gray-900 disabled:text-white/50">
-              <Plus size={20} />
+              <Plus size={18} lg:size={20} />
               <input
                 id='file-upload'
                 type='file'
@@ -115,7 +115,7 @@ const Playlist = ({ playlist, currentSongIndex, setCurrentSongIndex, setIsPlayin
             </label>
           </div>
         </div>
-        <div className='space-y-2 overflow-y-auto max-h-[calc(100vh-250px)]'>
+        <div className='space-y-2 overflow-y-auto max-h-[calc(50vh-100px)] lg:max-h-[calc(100vh-250px)]'>
           {playlist.length > 0 ? (
             <>
               {playlist.map((song, index) => (

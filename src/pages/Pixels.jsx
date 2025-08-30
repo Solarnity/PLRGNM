@@ -18,7 +18,6 @@ const PixelArtCreator = () => {
   const [gridSize, setGridSize] = useState(16);
   const [pixels, setPixels] = useState(() => Array(32 * 32).fill('#FFFFFF'));
   const [selectedColor, setSelectedColor] = useState('#000000');
-  const [showColorCount, setShowColorCount] = useState(false);
   const [tool, setTool] = useState('pencil');
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -61,6 +60,27 @@ const PixelArtCreator = () => {
     };
   }, []);
 
+  // Efecto para prevenir el scroll en dispositivos táctiles
+  useEffect(() => {
+    const preventScroll = (e) => {
+      if (e.touches.length > 1) return; // Permitir zoom con dos dedos
+      e.preventDefault();
+    };
+
+    const gridElement = gridRef.current;
+    if (gridElement) {
+      gridElement.addEventListener('touchmove', preventScroll, { passive: false });
+    }
+
+    return () => {
+      if (gridElement) {
+        gridElement.removeEventListener('touchmove', preventScroll);
+      }
+    };
+  }, []);
+
+  
+
   // Manejar cambio de tamaño de la cuadrícula
   const handleGridSizeChange = (e) => {
     const newSize = parseInt(e.target.value);
@@ -101,9 +121,10 @@ const PixelArtCreator = () => {
     }
   };
 
-  // Manejar movimiento del mouse sobre los píxeles
+  // Manejar movimiento del mouse sobre los píxeles (solo con barra espaciadora)
   const handlePixelMouseOver = (index, e) => {
-    if (isSpacePressed || e.buttons === 1) {
+    // Eliminar completamente la condición e.buttons === 1
+    if (isSpacePressed) {
       const colorToUse = tool === 'eraser' ? '#FFFFFF' : selectedColor;
       paintPixel(index, colorToUse);
     }
@@ -232,7 +253,7 @@ const PixelArtCreator = () => {
       '#4CEAEF': 'Cyan',
       '#3C50F0': 'Azul',
       '#6B50F6': 'Morado',
-      '#EC1F80': 'Fucsia',
+      '#EC1F80': 'Rosa',
       '#000000': 'Negro',
       '#444444': 'Gris',
       '#787878': 'Gris Claro',
@@ -240,11 +261,6 @@ const PixelArtCreator = () => {
     };
     
     return colorNames[hexCode] || hexCode;
-  };
-
-  // Alternar visibilidad del contador de colores
-  const toggleColorCount = () => {
-    setShowColorCount(!showColorCount);
   };
 
   // Seleccionar herramienta
@@ -335,9 +351,34 @@ const PixelArtCreator = () => {
       }
     }
 
+    // Para lados verticales (izquierda/derecha), mostrar solo números alternados si gridSize > 23
+    if ((side === 'left' || side === 'right') && n > 23) {
+      return numbers.map((num, idx) => idx % 2 === 0 ? num : '');
+    }
+    
+    // Para lados horizontales (arriba/abajo), mostrar solo números alternados si gridSize > 23
+    if ((side === 'top' || side === 'bottom') && n > 23) {
+      return numbers.map((num, idx) => idx % 2 === 0 ? num : '');
+    }
+
     return numbers;
   };
 
+  // Función para determinar el tamaño de fuente según el gridSize
+  const getFontSizeClass = () => {
+    if (gridSize <= 16) return "text-xs";
+    if (gridSize <= 24) return "text-[8px]";
+    return "text-[8px]";
+  };
+
+  // Efecto para deshabilitar automáticamente la numeración en grids muy grandes
+  useEffect(() => {
+    if (gridSize > 28 && numberingMode !== 'disabled') {
+      setNumberingMode('disabled');
+    }
+  }, [gridSize, numberingMode]);
+
+  const fontSizeClass = getFontSizeClass();
 
   // Obtener conteo de colores
   const colorCount = countPixelsByColor();
@@ -352,11 +393,11 @@ const PixelArtCreator = () => {
   return (
     <>
       <div className="fixed w-screen h-screen -z-10 bg-neutral-900" onContextMenu={handleContextMenu}/>
-      <div className="max-w-6xl mx-auto h-dvh text-neutral-100 p-4 md:p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-full">
+      <div className="max-w-6xl mx-auto min-h-dvh text-neutral-100 p-3 md:p-4 lg:p-6 overflow-x-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Panel de controles */}
           <div className="col-span-1 bg-neutral-800 p-4 md:p-6 rounded-lg shadow-lg">
-            <div className="flex items-center justify-between w-[85%] mb-3">
+            <div className="flex items-center justify-between w-full mb-3">
               <Link
                 to="/"
                 className="btn btn-sm btn-ghost btn-square flex items-center justify-center shadow-none hover:border-transparent hover:bg-white/25 hover:text-gray-900 disabled:text-white/50"
@@ -396,13 +437,13 @@ const PixelArtCreator = () => {
                   className={`btn transition-all duration-300 flex-1 ${tool === 'pencil' ? 'btn-almond' : 'glass text-almond hover:bg-almond/10'}`}
                   onClick={() => selectTool('pencil')}
                 >
-                  <Brush size={24}/>
+                  <Brush size={20} className="md:size-6"/>
                 </button>
                 <button
                   className={`btn transition-all duration-300 flex-1 ${tool === 'eraser' ? 'btn-almond' : 'glass text-almond hover:bg-almond/10'}`}
                   onClick={() => selectTool('eraser')}
                 >
-                  <Eraser size={24}/>
+                  <Eraser size={20} className="md:size-6"/>
                 </button>
               </div>
             </div>
@@ -410,11 +451,11 @@ const PixelArtCreator = () => {
             {/* Selector de color */}
             <div className="mb-4 md:mb-6">
               <h3 className="text-lg font-semibold mb-2 text-neutral-300">Colores:</h3>
-              <div className="grid h-40 grid-cols-4 place-content-center gap-3">
+              <div className="grid grid-cols-4 gap-2">
                 {colors.map((color, index) => (
                   <div
                     key={index}
-                    className={`w-full h-10 sm:h-10 rounded cursor-pointer outline-1 ${selectedColor === color ? 'outline-almond outline-3 outline-offset-2' : 'outline-neutral-600'}`}
+                    className={`w-full aspect-square rounded cursor-pointer outline-1 ${selectedColor === color ? 'outline-almond outline-3 outline-offset-2' : 'outline-neutral-600'}`}
                     style={{ backgroundColor: color }}
                     onClick={() => {
                       setSelectedColor(color);
@@ -426,43 +467,39 @@ const PixelArtCreator = () => {
             </div>
             
             {/* Botón para cambiar modo de numeración */}
-            <div className="grid grid-cols-2 gap-2">
-              <h3 className="text-lg font-semibold text-neutral-300">Numeración:</h3>                 
+            <div className="mb-4 md:mb-6">
+              <h3 className="text-lg font-semibold mb-2 text-neutral-300">Numeración:</h3>                 
               <button 
-                className={`btn ${numberingMode !== 'disabled' ? 'btn-almond' : 'glass text-almond hover:bg-almond/10'} col-span-2 mb-10`}
+                className={`btn ${numberingMode !== 'disabled' ? 'btn-almond' : 'glass text-almond hover:bg-almond/10'} w-full`}
                 onClick={cycleNumberingMode}
               >
                 {numberingMode === 'disabled' && 'Desactivada'}
                 {numberingMode === 'bottom-right' && 
                   <>
-                    <span>
-                      <MoveDownRight size={20}/>
-                    </span>
-                    <span>Inferior-Derecha</span>
+                    <MoveDownRight size={18} className="md:size-5"/>
+                    <span className="hidden md:inline">Inferior-Derecha</span>
+                    <span className="md:hidden">Inf-Der</span>
                   </>
                 }
                 {numberingMode === 'bottom-left' && 
                   <>
-                  <span>
-                    <MoveDownLeft size={20}/>
-                  </span>
-                  <span>Inferior-Izquierda</span>
+                    <MoveDownLeft size={18} className="md:size-5"/>
+                    <span className="hidden md:inline">Inferior-Izquierda</span>
+                    <span className="md:hidden">Inf-Izq</span>
                   </>
                 }
                 {numberingMode === 'top-right' && 
                   <>
-                    <span>
-                      <MoveUpRight size={20}/>
-                    </span>
-                    <span>Superior-Derecha</span>
+                    <MoveUpRight size={18} className="md:size-5"/>
+                    <span className="hidden md:inline">Superior-Derecha</span>
+                    <span className="md:hidden">Sup-Der</span>
                   </>
                 }
                 {numberingMode === 'top-left' && 
                   <>
-                    <span>
-                      <MoveUpLeft size={20}/>
-                    </span>
-                    <span>Superior-Izquierda</span>
+                    <MoveUpLeft size={18} className="md:size-5"/>
+                    <span className="hidden md:inline">Superior-Izquierda</span>
+                    <span className="md:hidden">Sup-Izq</span>
                   </>
                 }
               </button>
@@ -474,9 +511,7 @@ const PixelArtCreator = () => {
                 className="btn glass text-almond hover:bg-red-700 hover:text-almond"
                 onClick={clearGrid}
               >
-                <span>
-                  <Trash size={18}/>
-                </span>
+                <Trash size={18} className="md:size-5"/>
                 <span>Limpiar</span>
               </button>
               
@@ -484,9 +519,7 @@ const PixelArtCreator = () => {
                 className="btn glass text-almond hover:bg-blue-700 hover:text-almond"
                 onClick={exportDesign}
               >
-                <span>
-                  <FileDown size={18}/>
-                </span>
+                <FileDown size={18} className="md:size-5"/>
                 <span>Exportar</span>
               </button>
               
@@ -494,9 +527,7 @@ const PixelArtCreator = () => {
                 className="btn glass text-almond hover:bg-green-700 hover:text-almond"
                 onClick={triggerImport}
               >
-                <span>
-                  <FileUp size={18}/>
-                </span>
+                <FileUp size={18} className="md:size-5"/>
                 <span>Importar</span>
               </button>
               
@@ -511,48 +542,64 @@ const PixelArtCreator = () => {
           </div>
           
           {/* Cuadrícula de píxeles con números */}
-          <div className="col-span-2 bg-neutral-800 p-4 md:p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+          <div className="col-span-1 lg:col-span-2 bg-neutral-800 p-4 md:p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
             
-            <div className="relative w-full max-w-[500px] my-16">
+            <div className="relative w-full max-w-[400px] md:max-w-[500px] my-4 md:my-8 lg:my-16">
               {/* Números del lado izquierdo */}
               {numberingMode !== 'disabled' && (
-                <div className="absolute -left-4 h-full flex flex-col justify-between text-xs font-mono text-neutral-400">
+                <div className={`absolute -left-4 h-full flex flex-col justify-between ${fontSizeClass} font-mono text-neutral-400`}>
                   {leftNumbers.map((number, i) => (
-                    <div key={`left-${i}`} className="flex items-center justify-center h-full">
-                      {number}
+                    <div 
+                      key={`left-${i}`} 
+                      className="flex items-center justify-center h-full"
+                      style={{ visibility: number ? 'visible' : 'hidden' }}
+                    >
+                      {number || '·'}
                     </div>
                   ))}
                 </div>
               )}
-              
+
               {/* Números del lado derecho */}
               {numberingMode !== 'disabled' && (
-                <div className="absolute -right-4 h-full flex flex-col justify-between text-xs font-mono text-neutral-400">
+                <div className={`absolute -right-4 h-full flex flex-col justify-between ${fontSizeClass} font-mono text-neutral-400`}>
                   {rightNumbers.map((number, i) => (
-                    <div key={`right-${i}`} className="flex items-center justify-center h-full">
-                      {number}
+                    <div 
+                      key={`right-${i}`} 
+                      className="flex items-center justify-center h-full"
+                      style={{ visibility: number ? 'visible' : 'hidden' }}
+                    >
+                      {number || '·'}
                     </div>
                   ))}
                 </div>
               )}
-              
+
               {/* Números de la parte superior */}
               {numberingMode !== 'disabled' && (
-                <div className="absolute -top-4 w-full flex justify-between text-xs font-mono text-neutral-400 px-1">
+                <div className={`absolute -top-4 w-full flex justify-between ${fontSizeClass} font-mono text-neutral-400 px-0.5`}>
                   {topNumbers.map((number, i) => (
-                    <div key={`top-${i}`} className="flex-1 text-center">
-                      {number}
+                    <div 
+                      key={`top-${i}`} 
+                      className="flex-1 text-center"
+                      style={{ visibility: number ? 'visible' : 'hidden' }}
+                    >
+                      {number || '·'}
                     </div>
                   ))}
                 </div>
               )}
-              
+
               {/* Números de la parte inferior */}
               {numberingMode !== 'disabled' && (
-                <div className="absolute -bottom-4 w-full flex justify-between text-xs font-mono text-neutral-400 px-1">
+                <div className={`absolute -bottom-4 w-full flex justify-between ${fontSizeClass} font-mono text-neutral-400 px-0.5`}>
                   {bottomNumbers.map((number, i) => (
-                    <div key={`bottom-${i}`} className="flex-1 text-center">
-                      {number}
+                    <div 
+                      key={`bottom-${i}`} 
+                      className="flex-1 text-center"
+                      style={{ visibility: number ? 'visible' : 'hidden' }}
+                    >
+                      {number || '·'}
                     </div>
                   ))}
                 </div>
@@ -585,24 +632,31 @@ const PixelArtCreator = () => {
               </div>
             </div>
 
+            {/* Panel de conteo de colores - Versión mejorada */}
             <div className="mt-4 md:mt-6 p-3 md:p-4 bg-neutral-700 rounded-lg w-full">
-              <h3 className="text-lg font-semibold mb-2 text-neutral-300 w-full">Conteo:</h3>
-              <div className="max-h-25 overflow-y-auto grid grid-flow-col grid-cols-3 grid-rows-4 gap-x-8">
-                {Object.entries(colorCount)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([color, count]) => (
-                    <div key={color} className="flex items-center justify-between py-1 flex-wrap">
-                      <div className="flex items-center justify-between">
-                        <div 
-                          className="w-3 h-3 md:w-4 md:h-4 mr-2 border-2 border-neutral-600"
-                          style={{ backgroundColor: color }}
-                        />
-                        <span className="text-sm text-neutral-300">{getColorName(color)}</span>
+              <h3 className="text-lg font-semibold mb-2 text-neutral-300">Conteo:</h3>
+              <div className="max-h-32 overflow-y-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {Object.entries(colorCount)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([color, count]) => (
+                      <div key={color} className="flex items-center justify-between py-1">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <div 
+                            className="w-3 h-3 md:w-4 md:h-4 mr-2 border border-neutral-600 flex-shrink-0"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span className="text-sm text-neutral-300 truncate">
+                            {getColorName(color)}
+                          </span>
+                        </div>
+                        <span className="font-semibold text-sm text-neutral-300 ml-2 flex-shrink-0">
+                          {count}
+                        </span>
                       </div>
-                      <span className="font-semibold text-sm text-neutral-300">{count}</span>
-                    </div>
-                  ))
-                }
+                    ))
+                  }
+                </div>
               </div>
             </div>
 
